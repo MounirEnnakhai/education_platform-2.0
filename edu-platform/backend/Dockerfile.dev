@@ -1,0 +1,56 @@
+# Development image — auto-rebuilds on every .zig file save
+FROM debian:bookworm-slim
+
+ARG ZIG_VERSION=0.15.2
+ARG TARGETARCH
+ARG WATCHEXEC_VERSION=1.25.1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        curl ca-certificates xz-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+# Zig 0.15.2
+RUN set -eux; \
+    case "${TARGETARCH}" in \
+        amd64) ZIG_ARCH="x86_64-linux"  ;; \
+        arm64) ZIG_ARCH="aarch64-linux" ;; \
+        *) echo "Unsupported arch" && exit 1 ;; \
+    esac; \
+    curl -fsSL "https://ziglang.org/download/${ZIG_VERSION}/zig-${ZIG_ARCH}-${ZIG_VERSION}.tar.xz" \
+        -o /tmp/zig.tar.xz; \
+    tar -xJf /tmp/zig.tar.xz -C /usr/local; \
+    mv "/usr/local/zig-${ZIG_ARCH}-${ZIG_VERSION}" /usr/local/zig; \
+    rm /tmp/zig.tar.xz
+
+# watchexec — watches src/ and restarts the server on changes
+RUN set -eux; \
+    case "${TARGETARCH}" in \
+        amd64) WE_ARCH="x86_64-unknown-linux-musl"  ;; \
+        arm64) WE_ARCH="aarch64-unknown-linux-musl" ;; \
+        *) echo "Unsupported arch" && exit 1 ;; \
+    esac; \
+    curl -fsSL \
+        "https://github.com/watchexec/watchexec/releases/download/v${WATCHEXEC_VERSION}/watchexec-${WATCHEXEC_VERSION}-${WE_ARCH}.tar.xz" \
+        -o /tmp/we.tar.xz; \
+    tar -xJf /tmp/we.tar.xz -C /tmp; \
+    mv "/tmp/watchexec-${WATCHEXEC_VERSION}-${WE_ARCH}/watchexec" /usr/local/bin/watchexec; \
+    chmod +x /usr/local/bin/watchexec; \
+    rm -rf /tmp/we.tar.xz "/tmp/watchexec-${WATCHEXEC_VERSION}-${WE_ARCH}"
+
+ENV PATH="/usr/local/zig:${PATH}"
+WORKDIR /app
+
+# Cache deps layer
+COPY build.zig build.zig.zon ./
+RUN zig build --fetch
+
+VOLUME ["/app/src"]
+VOLUME ["/data"]
+EXPOSE 8080
+
+ENV DB_PATH=/data/edu_platform.db \
+    HOST=0.0.0.0 \
+    PORT=8080
+
+# Save a .zig file → container rebuilds + restarts automatically
+CMD ["watchexec", "--watch", "src", "--exts", "zig", "--restart", "--", "zig", "build", "run"]

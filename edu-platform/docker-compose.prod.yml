@@ -1,0 +1,21 @@
+name: edu-platform
+
+# Production overrides
+# Usage: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+services:
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile      # uses the optimised production build
+    restart: always
+    volumes: []                   # no source mount in production
+
+  postgres:
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}   # set via env / secrets manager
+
+  pgadmin:
+    profiles: ["disabled"]        # never starts in production

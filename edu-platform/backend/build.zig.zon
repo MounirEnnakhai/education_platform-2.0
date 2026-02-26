@@ -1,0 +1,19 @@
+.{
+    .fingerprint = 0xcad2f7146e3e1965,
+    .name = .edu_platform,
+    .version = "0.1.0",
+    .minimum_zig_version = "0.15.2",
+
+    .dependencies = .{
+        .httpz = .{
+            .url = "https://github.com/karlseguin/http.zig/archive/refs/heads/master.tar.gz",
+            .hash = "httpz-0.0.0-PNVzrN40BwD3lGAE8l_pShvVIGSlWglmFOsdhJnMVcXR",
+        },
+        .sqlite = .{
+            .url = "https://github.com/vrischmann/zig-sqlite/archive/refs/heads/master.tar.gz",
+            .hash = "sqlite-3.48.0-F2R_a8eODgD9X8XjvWlZ1K7C-tDuHae4FuShM2N-yIT2",
+        },
+    },
+
+    .paths = .{""},
+}

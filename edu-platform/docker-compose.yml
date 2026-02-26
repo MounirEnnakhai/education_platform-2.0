@@ -1,0 +1,77 @@
+name: edu-platform
+
+services:
+
+  # ── Backend (Zig) ─────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: edu-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend/src:/app/src   # your local edits → hot reload inside container
+      - backend-data:/data
+    env_file:
+      - ./backend/.env
+    environment:
+      HOST: "0.0.0.0"
+      PORT: "8080"
+      DB_PATH: "/data/edu_platform.db"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - edu-net
+
+  # ── PostgreSQL ────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: edu-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB:       edu_platform
+      POSTGRES_USER:     edu_user
+      POSTGRES_PASSWORD: edu_password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U edu_user -d edu_platform"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - edu-net
+
+  # ── pgAdmin (run with: docker compose --profile dev up) ───────────────────
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: edu-pgadmin
+    restart: unless-stopped
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL:    admin@edu.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    profiles:
+      - dev
+    networks:
+      - edu-net
+
+volumes:
+  backend-data:
+  postgres-data:
+  pgadmin-data:
+
+networks:
+  edu-net:
+    driver: bridge
