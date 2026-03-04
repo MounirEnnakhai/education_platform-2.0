@@ -23,10 +23,9 @@ pub fn main() !void {
     }
 }
 
-fn handleConnection(allocator: std.mem.Allocator, config: Config, conn: std.net.Server.Connection) !void {
+fn handleConnection(allocator: std.mem.Allocator, config: Config, conn: std.net.Server.Connection) void {
     defer conn.stream.close();
 
-    // We'll replace this stub with the real router in the next step.
     _ = config;
 
     var read_buf: [4096]u8 = undefined;
@@ -37,7 +36,6 @@ fn handleConnection(allocator: std.mem.Allocator, config: Config, conn: std.net.
         return;
     };
 
-    // Temporary: echo 501 until router exists
     request.respond("Not Implemented\n", .{
         .status = .not_implemented,
         .extra_headers = &.{
