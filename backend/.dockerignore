@@ -1,0 +1,24 @@
+# Zig build output — never copy into Docker context
+.zig-cache/
+zig-cache/
+zig-out/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# OS / editor noise
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Docs not needed in the image
+docs/
+*.md

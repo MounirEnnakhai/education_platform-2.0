@@ -1,0 +1,23 @@
+# Zig build output
+.zig-cache/
+zig-cache/
+zig-out/
+
+# Environment / secrets — never commit these
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
