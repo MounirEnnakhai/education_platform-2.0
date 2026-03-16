@@ -8,7 +8,7 @@ pub const App = struct {
     config: Config,
     db: Database,
 };
-
+// latest
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
