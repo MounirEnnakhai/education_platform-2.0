@@ -1,15 +1,15 @@
-const std = @import("std");
+// src/controllers/auth.zig
 const httpz = @import("httpz");
-const Config = @import("../config/config.zig").Config;
+const App = @import("../main.zig").App;
 
-pub fn register(config: Config, req: *httpz.Request, res: *httpz.Response) !void {
-    _ = config;
+pub fn register(app: *App, req: *httpz.Request, res: *httpz.Response) !void {
+    _ = app;
     _ = req;
     try res.json(.{ .message = "register called" }, .{});
 }
 
-pub fn login(config: Config, req: *httpz.Request, res: *httpz.Response) !void {
-    _ = config;
+pub fn login(app: *App, req: *httpz.Request, res: *httpz.Response) !void {
+    _ = app;
     _ = req;
     try res.json(.{ .message = "login called" }, .{});
 }

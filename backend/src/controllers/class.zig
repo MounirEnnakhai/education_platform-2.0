@@ -1,21 +1,21 @@
-const std = @import("std");
+// src/controllers/class.zig
 const httpz = @import("httpz");
-const Config = @import("../config/config.zig").Config;
+const App = @import("../main.zig").App;
 
-pub fn create(config: Config, req: *httpz.Request, res: *httpz.Response) !void {
-    _ = config;
+pub fn create(app: *App, req: *httpz.Request, res: *httpz.Response) !void {
+    _ = app;
     _ = req;
     try res.json(.{ .message = "class create called" }, .{});
 }
 
-pub fn list(config: Config, req: *httpz.Request, res: *httpz.Response) !void {
-    _ = config;
+pub fn list(app: *App, req: *httpz.Request, res: *httpz.Response) !void {
+    _ = app;
     _ = req;
     try res.json(.{ .message = "class list called" }, .{});
 }
 
-pub fn getOne(config: Config, req: *httpz.Request, res: *httpz.Response) !void {
-    _ = config;
+pub fn getOne(app: *App, req: *httpz.Request, res: *httpz.Response) !void {
+    _ = app;
     _ = req;
     try res.json(.{ .message = "class getOne called" }, .{});
 }
